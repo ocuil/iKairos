@@ -726,111 +726,502 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        backgroundColor: widget.isDarkMode 
+          ? const Color(0xFF1A1A2A) 
+          : Colors.white,
+        elevation: 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
           children: [
-            DrawerHeader(
+            // Header con gradiente
+            Container(
+              height: 180,
+              width: double.infinity,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: widget.isDarkMode
+                      ? [const Color(0xFF3A86FF), const Color(0xFF5F72FF)]
+                      : [const Color(0xFF3A86FF), const Color(0xFF885AFF)],
+                ),
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(30),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF3A86FF).withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-              child: const Text(
-                'Historial de Chats',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Image.asset(
+                            'assets/images/icon.png',
+                            width: 35,
+                            height: 35,
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        const Text(
+                          'iKairos',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    const Text(
+                      'Historial de Chats',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      '${_savedChats.length} ${_savedChats.length == 1 ? 'conversación' : 'conversaciones'}',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
             
-            // Mostrar chats guardados
-            if (_savedChats.isEmpty)
-              const ListTile(
-                title: Text('No hay chats guardados'),
-                subtitle: Text('Guarda un chat usando el botón de guardar'),
-              )
-            else
-              ..._savedChats.asMap().entries.map((entry) {
-                final index = entry.key;
-                final chat = entry.value;
-                return Dismissible(
-                  key: Key('chat_$index'),
-                  background: Container(
-                    color: Colors.blue,
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Colors.white,
+            // Botón para nuevo chat
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+              child: Material(
+                borderRadius: BorderRadius.circular(16),
+                color: widget.isDarkMode 
+                  ? const Color(0xFF242433)
+                  : const Color(0xFFF5F7FA),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _startNewChat();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: widget.isDarkMode 
+                          ? const Color(0xFF3A3A50) 
+                          : const Color(0xFFE4E8F0),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3A86FF).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            Icons.add,
+                            color: const Color(0xFF3A86FF),
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          'Nueva conversación',
+                          style: TextStyle(
+                            color: widget.isDarkMode 
+                              ? Colors.white 
+                              : const Color(0xFF1A1A2A),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  secondaryBackground: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 20.0),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
+                ),
+              ),
+            ),
+            
+            // Título de la sección
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 10, 24, 8),
+              child: Row(
+                children: [
+                  Text(
+                    'Conversaciones recientes',
+                    style: TextStyle(
+                      color: widget.isDarkMode 
+                        ? Colors.grey[400] 
+                        : Colors.grey[700],
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  direction: DismissDirection.horizontal,
-                  confirmDismiss: (direction) async {
-                    if (direction == DismissDirection.endToStart) {
-                      // Deslizado hacia la izquierda: Eliminar
-                      return await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text("Confirmar eliminación"),
-                            content: Text("¿Seguro que quieres eliminar \"${chat.title}\"?"),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(false),
-                                child: const Text("Cancelar"),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(true),
-                                child: const Text(
-                                  "Eliminar",
-                                  style: TextStyle(color: Colors.red),
+                  const Spacer(),
+                  if (_savedChats.isNotEmpty)
+                    GestureDetector(
+                      onTap: _confirmDeleteHistory,
+                      child: Icon(
+                        Icons.delete_sweep,
+                        size: 18,
+                        color: widget.isDarkMode 
+                          ? Colors.grey[400] 
+                          : Colors.grey[600],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            
+            // Línea divisoria
+            Divider(
+              color: widget.isDarkMode 
+                ? const Color(0xFF282836)
+                : Colors.grey[200],
+              thickness: 1,
+              indent: 24,
+              endIndent: 24,
+            ),
+            
+            // Lista de chats
+            Expanded(
+              child: _savedChats.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.chat_bubble_outline,
+                            size: 50,
+                            color: widget.isDarkMode 
+                              ? Colors.grey[700] 
+                              : Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No hay conversaciones guardadas',
+                            style: TextStyle(
+                              color: widget.isDarkMode 
+                                ? Colors.grey[400] 
+                                : Colors.grey[600],
+                              fontSize: 15,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Tus conversaciones guardadas aparecerán aquí',
+                            style: TextStyle(
+                              color: widget.isDarkMode 
+                                ? Colors.grey[600] 
+                                : Colors.grey[500],
+                              fontSize: 13,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    itemCount: _savedChats.length,
+                    itemBuilder: (context, index) {
+                      final chat = _savedChats[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Dismissible(
+                          key: Key('chat_$index'),
+                          background: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3A86FF).withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            alignment: Alignment.centerLeft,
+                            child: const Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                            ),
+                          ),
+                          secondaryBackground: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade400,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            alignment: Alignment.centerRight,
+                            child: const Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                          ),
+                          direction: DismissDirection.horizontal,
+                          confirmDismiss: (direction) async {
+                            if (direction == DismissDirection.endToStart) {
+                              // Deslizado hacia la izquierda: Eliminar
+                              return await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text("Confirmar eliminación"),
+                                    content: Text("¿Seguro que quieres eliminar \"${chat.title}\"?"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(false),
+                                        child: const Text("Cancelar"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(true),
+                                        child: const Text(
+                                          "Eliminar",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              // Deslizado hacia la derecha: Editar nombre
+                              _renameSavedChat(index);
+                              return false; // No eliminar el elemento
+                            }
+                          },
+                          onDismissed: (direction) {
+                            if (direction == DismissDirection.endToStart) {
+                              _deleteSavedChat(index);
+                            }
+                          },
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: () => _loadSavedChat(index),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: widget.isDarkMode 
+                                      ? const Color(0xFF282836) 
+                                      : Colors.grey[200]!,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: widget.isDarkMode 
+                                          ? const Color(0xFF242433) 
+                                          : const Color(0xFFF0F2F5),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Icon(
+                                        Icons.chat_bubble_outline,
+                                        color: widget.isDarkMode 
+                                          ? Colors.grey[400] 
+                                          : Colors.grey[700],
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            chat.title,
+                                            style: TextStyle(
+                                              color: widget.isDarkMode 
+                                                ? Colors.white 
+                                                : Colors.black87,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 15,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            '${chat.messages.length} mensajes • ${_formatDate(chat.timestamp)}',
+                                            style: TextStyle(
+                                              color: widget.isDarkMode 
+                                                ? Colors.grey[500] 
+                                                : Colors.grey[600],
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.more_vert,
+                                        color: widget.isDarkMode 
+                                          ? Colors.grey[400] 
+                                          : Colors.grey[600],
+                                        size: 20,
+                                      ),
+                                      constraints: const BoxConstraints(),
+                                      padding: const EdgeInsets.all(8),
+                                      onPressed: () {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          backgroundColor: widget.isDarkMode 
+                                            ? const Color(0xFF1F1F2C) 
+                                            : Colors.white,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.vertical(
+                                              top: Radius.circular(20),
+                                            ),
+                                          ),
+                                          builder: (context) => Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 20),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                _buildActionItem(
+                                                  context,
+                                                  'Renombrar',
+                                                  Icons.edit,
+                                                  const Color(0xFF3A86FF),
+                                                  () {
+                                                    Navigator.pop(context);
+                                                    _renameSavedChat(index);
+                                                  },
+                                                  widget.isDarkMode,
+                                                ),
+                                                _buildActionItem(
+                                                  context,
+                                                  'Eliminar',
+                                                  Icons.delete,
+                                                  Colors.red.shade400,
+                                                  () {
+                                                    Navigator.pop(context);
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) {
+                                                        return AlertDialog(
+                                                          title: const Text("Confirmar eliminación"),
+                                                          content: Text("¿Seguro que quieres eliminar \"${chat.title}\"?"),
+                                                          actions: <Widget>[
+                                                            TextButton(
+                                                              onPressed: () => Navigator.of(context).pop(),
+                                                              child: const Text("Cancelar"),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.of(context).pop();
+                                                                _deleteSavedChat(index);
+                                                              },
+                                                              child: const Text(
+                                                                "Eliminar",
+                                                                style: TextStyle(color: Colors.red),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                  widget.isDarkMode,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          );
-                        },
+                            ),
+                          ),
+                        ),
                       );
-                    } else {
-                      // Deslizado hacia la derecha: Editar nombre
-                      _renameSavedChat(index);
-                      return false; // No eliminar el elemento
-                    }
-                  },
-                  onDismissed: (direction) {
-                    if (direction == DismissDirection.endToStart) {
-                      _deleteSavedChat(index);
-                    }
-                  },
-                  child: ListTile(
-                    leading: const Icon(Icons.chat),
-                    title: Text(chat.title),
-                    subtitle: Text('${chat.messages.length} mensajes • ${_formatDate(chat.timestamp)}'),
-                    onTap: () => _loadSavedChat(index),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.edit, size: 20),
-                      onPressed: () => _renameSavedChat(index),
-                      tooltip: 'Editar nombre',
+                    },
+                  ),
+            ),
+            
+            // Línea divisoria y botón de cerrar
+            Divider(
+              color: widget.isDarkMode 
+                ? const Color(0xFF282836)
+                : Colors.grey[200],
+              thickness: 1,
+            ),
+            
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(16),
+                color: widget.isDarkMode 
+                  ? const Color(0xFF242433)
+                  : const Color(0xFFF5F7FA),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: widget.isDarkMode 
+                          ? const Color(0xFF3A3A50) 
+                          : const Color(0xFFE4E8F0),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      'Cerrar menú',
+                      style: TextStyle(
+                        color: widget.isDarkMode 
+                          ? Colors.grey[300] 
+                          : const Color(0xFF1A1A2A),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15,
+                      ),
                     ),
                   ),
-                );
-              }),
-              
-            if (_savedChats.isNotEmpty) const Divider(),
-            
-            // Opción para borrar todo el historial
-            ListTile(
-              leading: const Icon(Icons.delete_forever),
-              title: const Text('Borrar Historial'),
-              enabled: _savedChats.isNotEmpty,
-              onTap: _confirmDeleteHistory,
+                ),
+              ),
             ),
           ],
         ),
@@ -1175,4 +1566,39 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
       isDarkMode: isDarkMode,
     );
   }
+}
+
+// Constructor para items de acción en el modal bottom sheet
+Widget _buildActionItem(
+  BuildContext context, 
+  String title, 
+  IconData icon, 
+  Color iconColor,
+  VoidCallback onTap,
+  bool isDarkMode,
+) {
+  return ListTile(
+    leading: Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: iconColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(
+        icon,
+        color: iconColor,
+        size: 20,
+      ),
+    ),
+    title: Text(
+      title,
+      style: TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+        color: isDarkMode ? Colors.white : Colors.black87,
+      ),
+    ),
+    onTap: onTap,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
+  );
 }
