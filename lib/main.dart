@@ -402,9 +402,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _saveCurrentChat() {
     if (_currentMessages.isEmpty) {
       // No guardar chats vacíos
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No hay mensajes para guardar')),
-      );
+      _showCustomToast('No hay mensajes para guardar', isSuccess: false);
       return;
     }
 
@@ -464,9 +462,7 @@ class _ChatScreenState extends State<ChatScreen> {
               
               Navigator.pop(context); // Cerrar el diálogo
               
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Chat guardado como "$chatTitle"')),
-              );
+              _showCustomToast('Chat guardado como "$chatTitle"');
             },
             child: const Text('Guardar'),
           ),
@@ -489,9 +485,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // Cerrar el drawer
     Navigator.pop(context);
     
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Chat "${savedChat.title}" cargado')),
-    );
+    _showCustomToast('Chat "${savedChat.title}" cargado');
   }
   
   // Formatear fecha para mostrar en la UI
@@ -529,9 +523,7 @@ class _ChatScreenState extends State<ChatScreen> {
               Navigator.pop(context); // Cerrar el diálogo
               Navigator.pop(context); // Cerrar el drawer
               
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Historial borrado')),
-              );
+              _showCustomToast('Historial borrado');
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Borrar'),
@@ -558,9 +550,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 setState(() {
                   _currentMessages = []; // Limpiar mensajes sin guardar
                 });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Nuevo chat iniciado')),
-                );
+                _showCustomToast('Nuevo chat iniciado');
               },
               child: const Text('No guardar'),
             ),
@@ -571,9 +561,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 setState(() {
                   _currentMessages = []; // Limpiar mensajes para nuevo chat
                 });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Chat guardado y nuevo chat iniciado')),
-                );
+                _showCustomToast('Chat guardado y nuevo chat iniciado');
               },
               child: const Text('Guardar y continuar'),
             ),
@@ -582,9 +570,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     } else {
       // Si no hay mensajes, simplemente mostrar una notificación
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nuevo chat iniciado')),
-      );
+      _showCustomToast('Nuevo chat iniciado');
     }
   }
 
@@ -594,9 +580,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _savedChats.removeAt(index);
     });
     _saveAllData(); // Guardar la lista de chats actualizada
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Chat eliminado')),
-    );
+    _showCustomToast('Chat eliminado', isSuccess: true);
   }
 
   // Renombrar un chat guardado
@@ -643,9 +627,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 });
                 _saveAllData(); // Guardar la lista de chats actualizada
                 Navigator.pop(context); // Cerrar el diálogo
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Chat renombrado a "$newTitle"')),
-                );
+                _showCustomToast('Chat renombrado a "$newTitle"');
               }
             },
             child: const Text('Guardar'),
@@ -1540,6 +1522,97 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+  }
+
+  // Método personalizado para mostrar notificaciones estilo toast en la parte superior
+  void _showCustomToast(String message, {bool isSuccess = true}) {
+    final overlay = Overlay.of(context);
+    
+    final toast = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).padding.top + 10,
+        left: 20,
+        right: 20,
+        child: Material(
+          elevation: 10,
+          borderRadius: BorderRadius.circular(16),
+          shadowColor: isSuccess 
+            ? const Color(0xFF3A86FF).withOpacity(0.3)
+            : Colors.red.withOpacity(0.3),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isSuccess
+                  ? [
+                      widget.isDarkMode 
+                        ? const Color(0xFF242433)
+                        : Colors.white,
+                      widget.isDarkMode 
+                        ? const Color(0xFF2A2A3D)
+                        : const Color(0xFFF8FAFF),
+                    ]
+                  : [
+                      widget.isDarkMode 
+                        ? const Color(0xFF362936)
+                        : const Color(0xFFFFF0F0),
+                      widget.isDarkMode 
+                        ? const Color(0xFF2D242D)
+                        : const Color(0xFFFFE6E6),
+                    ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSuccess
+                  ? const Color(0xFF3A86FF).withOpacity(0.3)
+                  : Colors.red.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: (isSuccess 
+                      ? const Color(0xFF3A86FF) 
+                      : Colors.red).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    isSuccess ? Icons.check_circle : Icons.info_outline,
+                    color: isSuccess ? const Color(0xFF3A86FF) : Colors.red,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: widget.isDarkMode 
+                        ? Colors.white 
+                        : const Color(0xFF1A1A2A),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    
+    overlay.insert(toast);
+    
+    // Remover el toast después de 2.5 segundos
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      toast.remove();
+    });
   }
 }
 
