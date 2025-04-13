@@ -66,21 +66,117 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+          seedColor: const Color(0xFF3A86FF),
           brightness: Brightness.light,
+          primary: const Color(0xFF3A86FF),
+          secondary: const Color(0xFF885AFF),
+          tertiary: const Color(0xFFFF5ABB),
+          surface: Colors.white,
+          background: const Color(0xFFF9FAFC),
         ),
         textTheme: GoogleFonts.interTextTheme(
           Theme.of(context).textTheme,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFFF0F2F5),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: const BorderSide(color: Color(0xFF3A86FF), width: 1.5),
+          ),
+        ),
+        cardTheme: CardTheme(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: GoogleFonts.inter(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF1A1A1A),
+          ),
+          iconTheme: const IconThemeData(
+            color: Color(0xFF1A1A1A),
+          ),
         ),
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+          seedColor: const Color(0xFF3A86FF),
           brightness: Brightness.dark,
+          primary: const Color(0xFF3A86FF),
+          secondary: const Color(0xFF885AFF),
+          tertiary: const Color(0xFFFF5ABB),
+          surface: const Color(0xFF1F1F2C),
+          background: const Color(0xFF0F0F1A),
+          onBackground: Colors.white,
+          onSurface: Colors.white,
         ),
         textTheme: GoogleFonts.interTextTheme(
           ThemeData.dark().textTheme,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF0F0F1A),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFF1F1F2C),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: const BorderSide(color: Color(0xFF3A86FF), width: 1.5),
+          ),
+          hintStyle: const TextStyle(color: Color(0xFF6C727F)),
+        ),
+        cardTheme: CardTheme(
+          color: const Color(0xFF1F1F2C),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF3A86FF),
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: const Color(0xFF0F0F1A),
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: GoogleFonts.inter(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+          iconTheme: const IconThemeData(
+            color: Colors.white,
+          ),
         ),
       ),
       themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
@@ -572,26 +668,60 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('iKairos'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Image.asset(
+                'assets/images/icon.png',
+                width: 30,
+                height: 30,
+              ),
+            ),
+            const Text(
+              'iKairos',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 0,
+        scrolledUnderElevation: 2,
+        shadowColor: Theme.of(context).shadowColor.withOpacity(0.3),
         actions: [
           // Botón para nuevo chat
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'Nuevo Chat',
             onPressed: _startNewChat,
+            style: IconButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           // Botón para guardar el chat actual
           IconButton(
-            icon: const Icon(Icons.save),
+            icon: const Icon(Icons.save_outlined),
             tooltip: 'Guardar Chat',
             onPressed: _saveCurrentChat,
+            style: IconButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           // Botón para cambiar el tema
           IconButton(
-            icon: Icon(widget.isDarkMode ? Icons.dark_mode : Icons.light_mode),
-            tooltip: 'Cambiar Tema',
+            icon: widget.isDarkMode 
+                ? const Icon(Icons.light_mode_outlined)
+                : const Icon(Icons.dark_mode_outlined),
+            tooltip: widget.isDarkMode ? 'Modo Claro' : 'Modo Oscuro',
             onPressed: () => widget.toggleTheme(),
+            style: IconButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ],
       ),
@@ -751,22 +881,48 @@ class _ChatScreenState extends State<ChatScreen> {
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
                   child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
                     padding: message.isUserMessage
-                        ? const EdgeInsets.all(12.0)
-                        : const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                        ? const EdgeInsets.all(14.0)
+                        : const EdgeInsets.symmetric(vertical: 10.0, horizontal: 14.0),
                     constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.75,
+                      maxWidth: MediaQuery.of(context).size.width * 0.80,
                     ),
                     decoration: BoxDecoration(
                       color: message.isUserMessage
                           ? (widget.isDarkMode 
-                              ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
-                              : Colors.blue[100])
+                              ? const Color(0xFF3A86FF).withOpacity(0.25)
+                              : const Color(0xFFE3F0FF))
                           : (widget.isDarkMode 
-                              ? Theme.of(context).colorScheme.surfaceVariant
-                              : Colors.grey[200]),
-                      borderRadius: BorderRadius.circular(8.0),
+                              ? const Color(0xFF1F1F2C)
+                              : Colors.white),
+                      borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(18.0),
+                        topRight: const Radius.circular(18.0),
+                        bottomLeft: message.isUserMessage 
+                            ? const Radius.circular(18.0) 
+                            : const Radius.circular(4.0),
+                        bottomRight: message.isUserMessage 
+                            ? const Radius.circular(4.0) 
+                            : const Radius.circular(18.0),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: message.isUserMessage
+                            ? (widget.isDarkMode 
+                                ? const Color(0xFF3A86FF).withOpacity(0.3)
+                                : const Color(0xFFCCE4FF))
+                            : (widget.isDarkMode 
+                                ? const Color(0xFF282836)
+                                : const Color(0xFFF0F2F5)),
+                        width: 1,
+                      ),
                     ),
                     child: message.isUserMessage
                         // Texto simple para mensajes del usuario
@@ -876,16 +1032,26 @@ class _ChatScreenState extends State<ChatScreen> {
           
           // Barra de entrada de mensajes
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
+              color: widget.isDarkMode 
+                ? const Color(0xFF1A1A2A) 
+                : Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 3,
-                  offset: const Offset(0, -1),
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, -2),
                 ),
               ],
+              border: Border(
+                top: BorderSide(
+                  color: widget.isDarkMode 
+                    ? const Color(0xFF282836) 
+                    : const Color(0xFFEAECF0),
+                  width: 1,
+                ),
+              ),
             ),
             child: SafeArea(
               child: Row(
@@ -893,22 +1059,55 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   // Campo de texto
                   Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: InputDecoration(
-                        hintText: 'Escribe un mensaje...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
-                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context).shadowColor.withOpacity(0.04),
+                            spreadRadius: 0,
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                      onSubmitted: (_) => _sendMessage(),
-                      maxLines: null,
-                      textCapitalization: TextCapitalization.sentences,
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: InputDecoration(
+                          hintText: 'Escribe un mensaje...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
+                          filled: true,
+                          fillColor: widget.isDarkMode 
+                            ? const Color(0xFF242433) 
+                            : const Color(0xFFF5F7FA),
+                          hintStyle: TextStyle(
+                            color: widget.isDarkMode 
+                              ? Colors.grey[400] 
+                              : Colors.grey[600],
+                            fontSize: 15.0,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.chat_bubble_outline,
+                            color: widget.isDarkMode 
+                              ? Colors.grey[500] 
+                              : Colors.grey[600],
+                            size: 20,
+                          ),
+                        ),
+                        style: TextStyle(
+                          color: widget.isDarkMode 
+                            ? Colors.white 
+                            : Colors.black87,
+                          fontSize: 15.0,
+                        ),
+                        onSubmitted: (_) => _sendMessage(),
+                        maxLines: null,
+                        textCapitalization: TextCapitalization.sentences,
+                      ),
                     ),
                   ),
                   
@@ -916,12 +1115,30 @@ class _ChatScreenState extends State<ChatScreen> {
                   
                   // Botón de enviar
                   Container(
+                    width: 50,
+                    height: 50,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF3A86FF), Color(0xFF5F72FF)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF3A86FF).withOpacity(0.4),
+                          spreadRadius: 0,
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.send, color: Colors.white),
+                      icon: const Icon(
+                        Icons.send_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                       onPressed: _sendMessage,
                     ),
                   ),
