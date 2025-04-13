@@ -2,7 +2,9 @@
 
 iKairos es un asistente de IA personal para iOS y Android desarrollado con Flutter. Permite mantener conversaciones con una inteligencia artificial con personalidad ajustable mediante parámetros configurables.
 
-![iKairos App](https://via.placeholder.com/800x400?text=iKairos+App)
+<p align="center">
+  <img src="assets/images/logo.png" alt="iKairos Logo" width="200"/>
+</p>
 
 ## Características principales
 
